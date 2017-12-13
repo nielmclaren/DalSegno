@@ -1,6 +1,8 @@
 
 import controlP5.*;
 
+Config config;
+
 ControlP5 cp5;
 float initialFftMaxValue = 100;
 
@@ -13,10 +15,14 @@ ArrayList<Sparkline> bandSparklines;
 ArrayList<Sparkline> band5AverageSparklines;
 ArrayList<Sparkline> band10AverageSparklines;
 
+Lighting lighting;
+
 FileNamer fileNamer;
 
 void setup() {
   size(1280, 720, P2D);
+
+  config = new Config();
 
   cp5 = new ControlP5(this);
   cp5.addSlider("fftMaxValue")
@@ -59,6 +65,8 @@ void setup() {
         .numValues(100 - 10 + 1)
         .maxValue(initialFftMaxValue));
   }
+
+  lighting = new Lighting(this, config);
 
   fileNamer = new FileNamer("output/export", "png");
 
