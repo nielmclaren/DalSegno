@@ -16,6 +16,7 @@ ArrayList<Sparkline> band5AverageSparklines;
 ArrayList<Sparkline> band10AverageSparklines;
 
 Lighting lighting;
+ArrayList<LedGroup> randomGroups;
 
 FileNamer fileNamer;
 
@@ -67,6 +68,7 @@ void setup() {
   }
 
   lighting = new Lighting(this, config);
+  randomGroups = lighting.getGroup().getRandomGroups(4);
 
   fileNamer = new FileNamer("output/export", "png");
 
@@ -95,6 +97,13 @@ void draw() {
     Sparkline band10AverageSparkline = band10AverageSparklines.get(i);
     band10AverageSparkline.values(bandValueCollector.getRunningAverage(10));
     band10AverageSparkline.draw(g);
+  }
+
+  if (frameCount % 50 == 0) {
+    for (LedGroup group : randomGroups) {
+      color c = color(random(255), random(255), random(255));
+      group.setColor(c);
+    }
   }
 }
 

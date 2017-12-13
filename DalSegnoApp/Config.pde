@@ -3,7 +3,7 @@ public class Config {
   Config() {
   }
 
-  int numPixels() {
+  int numLeds() {
     return 160;
   }
 
