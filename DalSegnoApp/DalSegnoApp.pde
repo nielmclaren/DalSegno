@@ -26,10 +26,7 @@ void setup() {
 void draw() {
   background(0);
 
-  ui.readSparklineValues(signal.getFftArray())
-    .readNotes(signal.readNotes())
-    .readRhythmNotes(signal.readRhythmNotes())
-    .draw(g);
+  ui.read(signal).draw(g);
 
   if (frameCount % 50 == 0) {
     for (LedGroup group : randomGroups) {

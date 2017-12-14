@@ -23,6 +23,14 @@ public class UI {
   private NoteChart _noteChart;
   private NoteChart _rhythmNoteChart;
 
+  private ValueCollector _notesThisBarValueCollector;
+  private ValueCollector _rhythmNotesThisBarValueCollector;
+  private ValueCollector _anyNotesThisBarValueCollector;
+
+  private Sparkline _notesThisBarSparkline;
+  private Sparkline _rhythmNotesThisBarSparkline;
+  private Sparkline _anyNotesThisBarSparkline;
+
   UI(PApplet app) {
     _cp5 = new ControlP5(app);
     _fftAvgSize = 0;
@@ -30,6 +38,7 @@ public class UI {
     setup();
     setupBandValueCollectors();
     setupFftSparklines();
+    setupNoteValueCollectors();
     setupNoteHistory();
     setupNoteSparklines();
   }
@@ -83,6 +92,12 @@ public class UI {
     }
   }
 
+  private void setupNoteValueCollectors() {
+    _notesThisBarValueCollector = new ValueCollector().maxValues(100);
+    _rhythmNotesThisBarValueCollector = new ValueCollector().maxValues(100);
+    _anyNotesThisBarValueCollector = new ValueCollector().maxValues(100);
+  }
+
   private void setupNoteHistory() {
     _maxNoteHistorySize = 50;
 
@@ -120,9 +135,30 @@ public class UI {
     _rhythmNoteChart = new NoteChart("rhythmNote")
       .x(100 + 3 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING).y(50 + SPARKLINE_HEIGHT + SPACING)
       .width(NOTE_CHART_WIDTH).height(500);
+
+    _notesThisBarSparkline = new Sparkline("notesThisBar")
+      .x(100).y(height - 3 * (SPARKLINE_HEIGHT + SPACING))
+      .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
+      .maxValue(32);
+    _rhythmNotesThisBarSparkline = new Sparkline("rhythmNotesThisBar")
+      .x(100).y(height - 2 * (SPARKLINE_HEIGHT + SPACING))
+      .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
+      .maxValue(32);
+    _anyNotesThisBarSparkline = new Sparkline("anyNotesThisBar")
+      .x(100).y(height - 1 * (SPARKLINE_HEIGHT + SPACING))
+      .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
+      .maxValue(32);
   }
 
-  UI readSparklineValues(ArrayList<Float> fftValues) {
+  UI read(Signal signal) {
+    readFft(signal.getFftArray());
+    readNotes(signal.readNotes());
+    readRhythmNotes(signal.readRhythmNotes());
+    readXThisX(signal);
+    return this;
+  }
+
+  private void readFft(ArrayList<Float> fftValues) {
     _fftSparkline.values(fftValues);
 
     for (int i = 0; i < fftValues.size(); i++) {
@@ -138,10 +174,9 @@ public class UI {
       Sparkline band10AverageSparkline = _band10AverageSparklines.get(i);
       band10AverageSparkline.values(bandValueCollector.getRunningAverage(10));
     }
-    return this;
   }
 
-  UI readNotes(ArrayList<Note> notes) {
+  private void readNotes(ArrayList<Note> notes) {
     ArrayList<Float> noteData = getNoteData(notes);
 
     _noteHistory.add(noteData);
@@ -151,10 +186,9 @@ public class UI {
 
     _noteSparkline.values(noteData);
     _noteChart.values(_noteHistory);
-    return this;
   }
 
-  UI readRhythmNotes(ArrayList<Note> notes) {
+  private void readRhythmNotes(ArrayList<Note> notes) {
     ArrayList<Float> noteData = getNoteData(notes);
 
     _rhythmNoteHistory.add(noteData);
@@ -164,7 +198,6 @@ public class UI {
 
     _rhythmNoteSparkline.values(noteData);
     _rhythmNoteChart.values(_rhythmNoteHistory);
-    return this;
   }
 
   private ArrayList<Float> getNoteData(ArrayList<Note> notes) {
@@ -180,6 +213,16 @@ public class UI {
       result.add(-1.);
     }
     return result;
+  }
+
+  private void readXThisX(Signal signal) {
+    _notesThisBarValueCollector.add(signal.numNotesThisBar());
+    _rhythmNotesThisBarValueCollector.add(signal.numRhythmNotesThisBar());
+    _anyNotesThisBarValueCollector.add(signal.numNotesThisBar() + signal.numRhythmNotesThisBar());
+
+    _notesThisBarSparkline.values(_notesThisBarValueCollector.values());
+    _rhythmNotesThisBarSparkline.values(_rhythmNotesThisBarValueCollector.values());
+    _anyNotesThisBarSparkline.values(_anyNotesThisBarValueCollector.values());
   }
 
   UI draw(PGraphics g) {
@@ -199,6 +242,11 @@ public class UI {
     _rhythmNoteSparkline.draw(g);
     _noteChart.draw(g);
     _rhythmNoteChart.draw(g);
+
+    _notesThisBarSparkline.draw(g);
+    _rhythmNotesThisBarSparkline.draw(g);
+    _anyNotesThisBarSparkline.draw(g);
+
     return this;
   }
 

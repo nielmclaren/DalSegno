@@ -17,6 +17,9 @@ public class Signal {
   private ArrayList<Note> _rhythmNotes;
   private float _tempo;
 
+  private int _numNotesThisBar;
+  private int _numRhythmNotesThisBar;
+
   Signal(PApplet app) {
     _minim = new Minim(app);
     _in = _minim.getLineIn();
@@ -31,6 +34,9 @@ public class Signal {
     _notes = new ArrayList<Note>();
     _rhythmNotes = new ArrayList<Note>();
     _tempo = 0;
+
+    _numNotesThisBar = 0;
+    _numRhythmNotesThisBar = 0;
 
     app.registerMethod("draw", this);
   }
@@ -63,10 +69,21 @@ public class Signal {
     return result;
   }
 
+  int numNotesThisBar() {
+    return _numNotesThisBar;
+  }
+
+  int numRhythmNotesThisBar() {
+    return _numRhythmNotesThisBar;
+  }
+
   void oscEvent(OscMessage m) {
     if (m.checkAddrPattern("/beat")) {
       //println("/beat", m.get(0).intValue());
       _beat = m.get(0).intValue();
+
+      _numNotesThisBar = 0;
+      _numRhythmNotesThisBar = 0;
     }
     if (m.checkAddrPattern("/measureDivision")) {
       //println("/measureDivision", m.get(0).floatValue());
@@ -75,6 +92,8 @@ public class Signal {
     if (m.checkAddrPattern("/note")) {
       //println("/note", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
       _notes.add(new Note(m));
+
+      _numNotesThisBar++;
     }
     if (m.checkAddrPattern("/playing")) {
       //println("/playing", m.get(0).intValue());
@@ -83,6 +102,8 @@ public class Signal {
     if (m.checkAddrPattern("/rthm")) {
       //println("/rthm", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
       _rhythmNotes.add(new Note(m));
+
+      _numRhythmNotesThisBar++;
     }
     if (m.checkAddrPattern("/tempo")) {
       //println("/tempo", m.get(0).floatValue());
