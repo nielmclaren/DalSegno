@@ -24,7 +24,7 @@ class Sparkline {
     g.pushStyle();
 
     g.fill(0);
-    g.stroke(128);
+    g.stroke(32);
     g.rect(_x, _y, _width, _height);
 
     drawSparkline(g);
@@ -51,9 +51,12 @@ class Sparkline {
       } else {
         println("Sparkline(" + _name + ") clipped. value=" + value + ", maxValue=" + _maxValue);
         g.fill(255, 0, 0);
+        h = _height;
       }
 
-      g.rect(_x + _width - _values.size() * w + w * i, _y + _height - h, w, h);
+      if (value > 0) {
+        g.rect(_x + _width - _values.size() * w + w * i, _y + _height - h, w, h);
+      }
     }
   }
 

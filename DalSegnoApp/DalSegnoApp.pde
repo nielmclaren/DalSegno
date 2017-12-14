@@ -16,7 +16,7 @@ void setup() {
 
   signal = new Signal(this);
 
-  ui = new UI(this)
+  ui = new UI(this, config)
     .fftAvgSize(signal.getFft().avgSize());
 
   lighting = new Lighting(this, config);

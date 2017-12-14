@@ -19,8 +19,8 @@ class NoteChart {
   void draw(PGraphics g) {
     g.pushStyle();
 
-    g.fill(0);
-    g.stroke(128);
+    g.fill(16);
+    g.stroke(64);
     g.rect(_x, _y, _width, _height);
 
     drawChart(g);
@@ -37,10 +37,6 @@ class NoteChart {
     float w = _width / _values.size();
     float h = _height / 127;
     for (int time = 0; time < _values.size(); time++) {
-      g.stroke(32);
-      g.fill(0);
-      g.rect(_x + time * w, _y, w, _height);
-
       ArrayList<Float> notes = _values.get(time);
       for (int note = 0; note < 127; note++) {
         float attack = notes.get(note);
