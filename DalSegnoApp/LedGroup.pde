@@ -54,6 +54,11 @@ public class LedGroup {
     return result;
   }
 
+  LedGroup fade(int durationMs) {
+    _lighting.addAnimation(new AnimationFade(this, durationMs));
+    return this;
+  }
+
   private int[] toArray(ArrayList<Integer> input) {
     int[] output = new int[input.size()];
     for (int i = 0; i < input.size(); i++) {

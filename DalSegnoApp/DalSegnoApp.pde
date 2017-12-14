@@ -20,7 +20,7 @@ void setup() {
     .fftAvgSize(signal.getFft().avgSize());
 
   lighting = new Lighting(this, config);
-  randomGroups = lighting.getGroup().getRandomGroups(4);
+  randomGroups = lighting.getGroup().getRandomGroups(8);
 }
 
 void draw() {
@@ -29,10 +29,7 @@ void draw() {
   ui.read(signal).draw(g);
 
   if (frameCount % 50 == 0) {
-    for (LedGroup group : randomGroups) {
-      color c = color(random(255), random(255), random(255));
-      group.setColor(c);
-    }
+    randomGroups.get(floor(random(randomGroups.size()))).fade(2000);
   }
 }
 
