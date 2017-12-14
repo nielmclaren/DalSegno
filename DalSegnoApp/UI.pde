@@ -1,5 +1,10 @@
 
 public class UI {
+  private final int SPARKLINE_WIDTH = 200;
+  private final int SPARKLINE_HEIGHT = 30;
+  private final int NOTE_CHART_WIDTH = 300;
+  private final int SPACING = 6;
+
   private float _initialFftMaxValue = 100;
   private ControlP5 _cp5;
 
@@ -10,13 +15,23 @@ public class UI {
   private ArrayList<Sparkline> _band5AverageSparklines;
   private ArrayList<Sparkline> _band10AverageSparklines;
 
+  private Sparkline _noteSparkline;
+  private Sparkline _rhythmNoteSparkline;
+  private ArrayList<ArrayList<Float>> _noteHistory;
+  private ArrayList<ArrayList<Float>> _rhythmNoteHistory;
+  private int _maxNoteHistorySize;
+  private NoteChart _noteChart;
+  private NoteChart _rhythmNoteChart;
+
   UI(PApplet app) {
     _cp5 = new ControlP5(app);
     _fftAvgSize = 0;
 
     setup();
     setupBandValueCollectors();
-    setupSparklines();
+    setupFftSparklines();
+    setupNoteHistory();
+    setupNoteSparklines();
   }
 
   private void setup() {
@@ -36,9 +51,9 @@ public class UI {
     }
   }
 
-  private void setupSparklines() {
+  private void setupFftSparklines() {
     _fftSparkline = new Sparkline("fft")
-      .x(100).y(50).width(300).height(25)
+      .x(100).y(50).width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
       .maxValue(_initialFftMaxValue);
 
     _bandSparklines = new ArrayList<Sparkline>();
@@ -47,22 +62,64 @@ public class UI {
     for (int i = 0; i < _fftAvgSize; i++) {
       _bandSparklines.add(
         new Sparkline("band" + i)
-          .x(100).y(80 + i * 30).width(300).height(25)
+          .x(100).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
+          .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
           .numValues(100)
           .maxValue(_initialFftMaxValue));
 
       _band5AverageSparklines.add(
         new Sparkline("band5Average" + i)
-          .x(410).y(80 + i * 30).width(300).height(25)
+          .x(100 + SPARKLINE_WIDTH + SPACING).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
+          .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
           .numValues(100 - 5 + 1)
           .maxValue(_initialFftMaxValue));
 
       _band10AverageSparklines.add(
         new Sparkline("band10Average" + i)
-          .x(720).y(80 + i * 30).width(300).height(25)
+          .x(100 + 2 * (SPARKLINE_WIDTH + SPACING)).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
+          .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
           .numValues(100 - 10 + 1)
           .maxValue(_initialFftMaxValue));
     }
+  }
+
+  private void setupNoteHistory() {
+    _maxNoteHistorySize = 50;
+
+    ArrayList<Float> noNotes = new ArrayList<Float>();
+    for (int i = 0; i < 127; i++) {
+      noNotes.add(0.);
+    }
+
+    _noteHistory = new ArrayList<ArrayList<Float>>();
+    for (int i = 0; i < _maxNoteHistorySize; i++) {
+      _noteHistory.add(new ArrayList<Float>(noNotes));
+    }
+
+    _rhythmNoteHistory = new ArrayList<ArrayList<Float>>();
+    for (int i = 0; i < _maxNoteHistorySize; i++) {
+      _rhythmNoteHistory.add(new ArrayList<Float>(noNotes));
+    }
+  }
+
+  private void setupNoteSparklines() {
+    _noteSparkline = new Sparkline("note")
+      .x(100 + 3 * (SPARKLINE_WIDTH + SPACING)).y(50)
+      .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
+      .maxValue(127);
+
+    _rhythmNoteSparkline = new Sparkline("rhythmNote")
+      .x(100 + 3 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING).y(50)
+      .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
+      .maxValue(127);
+
+    _noteChart = new NoteChart("note")
+      .x(100 + 3 * (SPARKLINE_WIDTH + SPACING)).y(50 + SPARKLINE_HEIGHT + SPACING)
+      .width(NOTE_CHART_WIDTH).height(500);
+
+    _rhythmNoteChart = new NoteChart("rhythmNote")
+      .x(100 + 3 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING).y(50 + SPARKLINE_HEIGHT + SPACING)
+      .width(NOTE_CHART_WIDTH).height(500);
   }
 
   UI readSparklineValues(ArrayList<Float> fftValues) {
@@ -84,6 +141,47 @@ public class UI {
     return this;
   }
 
+  UI readNotes(ArrayList<Note> notes) {
+    ArrayList<Float> noteData = getNoteData(notes);
+
+    _noteHistory.add(noteData);
+    while (_noteHistory.size() > 50) {
+      _noteHistory.remove(0);
+    }
+
+    _noteSparkline.values(noteData);
+    _noteChart.values(_noteHistory);
+    return this;
+  }
+
+  UI readRhythmNotes(ArrayList<Note> notes) {
+    ArrayList<Float> noteData = getNoteData(notes);
+
+    _rhythmNoteHistory.add(noteData);
+    while (_rhythmNoteHistory.size() > 50) {
+      _rhythmNoteHistory.remove(0);
+    }
+
+    _rhythmNoteSparkline.values(noteData);
+    _rhythmNoteChart.values(_rhythmNoteHistory);
+    return this;
+  }
+
+  private ArrayList<Float> getNoteData(ArrayList<Note> notes) {
+    ArrayList<Float> result = new ArrayList<Float>();
+    for (int i = 0; i < notes.size(); i++) {
+      Note note = notes.get(i);
+      while (result.size() < note.note()) {
+        result.add(-1.);
+      }
+      result.add((float)note.velocity());
+    }
+    while (result.size() < 127) {
+      result.add(-1.);
+    }
+    return result;
+  }
+
   UI draw(PGraphics g) {
     _fftSparkline.draw(g);
     for (int i = 0; i < _bandSparklines.size(); i++) {
@@ -96,13 +194,19 @@ public class UI {
       Sparkline band10AverageSparkline = _band10AverageSparklines.get(i);
       band10AverageSparkline.draw(g);
     }
+
+    _noteSparkline.draw(g);
+    _rhythmNoteSparkline.draw(g);
+    _noteChart.draw(g);
+    _rhythmNoteChart.draw(g);
     return this;
   }
 
   UI fftAvgSize(int v) {
     _fftAvgSize = v;
     setupBandValueCollectors();
-    setupSparklines();
+    setupFftSparklines();
+    setupNoteSparklines();
     return this;
   }
 

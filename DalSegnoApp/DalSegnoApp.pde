@@ -1,4 +1,5 @@
 
+
 import controlP5.*;
 
 Config config;
@@ -7,8 +8,6 @@ Signal signal;
 UI ui;
 Lighting lighting;
 ArrayList<LedGroup> randomGroups;
-
-FileNamer fileNamer;
 
 void setup() {
   size(1280, 720, P2D);
@@ -22,14 +21,14 @@ void setup() {
 
   lighting = new Lighting(this, config);
   randomGroups = lighting.getGroup().getRandomGroups(4);
-
-  fileNamer = new FileNamer("output/export", "png");
 }
 
 void draw() {
   background(0);
 
   ui.readSparklineValues(signal.getFftArray())
+    .readNotes(signal.readNotes())
+    .readRhythmNotes(signal.readRhythmNotes())
     .draw(g);
 
   if (frameCount % 50 == 0) {
@@ -42,16 +41,4 @@ void draw() {
 
 void fftMaxValue(float v) {
   ui.fftMaxValue(v);
-}
-
-void keyReleased() {
-  switch (key) {
-    case 'r':
-      saveRender();
-      break;
-  }
-}
-
-void saveRender() {
-  saveFrame(fileNamer.next());
 }
