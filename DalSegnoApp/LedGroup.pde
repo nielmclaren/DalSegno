@@ -66,13 +66,13 @@ public class LedGroup {
     return result;
   }
 
-  LedGroup fade(int durationMs) {
-    _lighting.addAnimation(new AnimationFade(this, durationMs));
+  LedGroup fade(color c, int durationMs) {
+    _lighting.addAnimation(new AnimationFade(this, c, durationMs));
     return this;
   }
 
-  LedGroup pulse(int durationMs) {
-    _lighting.addAnimation(new AnimationPulse(this, durationMs));
+  LedGroup pulse(color c, int durationMs) {
+    _lighting.addAnimation(new AnimationPulse(this, c, durationMs));
     return this;
   }
 

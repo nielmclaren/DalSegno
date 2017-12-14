@@ -9,6 +9,8 @@ UI ui;
 Lighting lighting;
 ArrayList<LedGroup> randomGroups;
 
+Palette palette;
+
 void setup() {
   size(1280, 720, P2D);
 
@@ -21,6 +23,8 @@ void setup() {
 
   lighting = new Lighting(this, config);
   randomGroups = lighting.getGroup().getRandomGroups(8);
+
+  palette = config.paletteInstagram();
 }
 
 void draw() {
@@ -29,11 +33,12 @@ void draw() {
   ui.read(signal).draw(g);
 
   if (frameCount % 50 == 0) {
+    color c = palette.weightedColor();
     LedGroup group = randomGroups.get(floor(random(randomGroups.size())));
-    if (random(1) < 0.5) {
-      group.pulse(2000);
+    if (random(1) < 0) {
+      group.pulse(c, 2000);
     } else {
-      group.fade(500);
+      group.fade(c, 500);
     }
   }
 }

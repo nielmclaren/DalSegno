@@ -1,11 +1,13 @@
 
 public class AnimationPulse extends Animation {
   private long _createdMs;
+  private color _color;
   private int _durationMs;
   
-  AnimationPulse(LedGroup ledGroup, int durationMs) {
+  AnimationPulse(LedGroup ledGroup, color c, int durationMs) {
     super(ledGroup);
     _createdMs = millis();
+    _color = c;
     _durationMs = durationMs;
   }
   
@@ -13,7 +15,7 @@ public class AnimationPulse extends Animation {
     long now = millis();
     float t = map(now - _createdMs, 0, _durationMs, 0, 1);
     float tt = t < 0.5 ? t / 0.5 : (1 - t) / 0.5;
-    color c = color(tt * 255);
+    color c = lerpColor(color(0), _color, tt);
     ledGroup().addColor(c);
   }
 

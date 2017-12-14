@@ -71,8 +71,12 @@ public class Lighting {
 
   private void writePixels() {
     for (int i = 0; i < _numLeds; i++) {
-      _opc.setPixel(i, _ledColors[i]);
+      _opc.setPixel(i, transformPixel(_ledColors[i]));
     }
     _opc.writePixels();
+  }
+
+  private color transformPixel(color c) {
+    return color(green(c), red(c), blue(c));
   }
 }
