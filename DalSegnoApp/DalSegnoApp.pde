@@ -29,7 +29,12 @@ void draw() {
   ui.read(signal).draw(g);
 
   if (frameCount % 50 == 0) {
-    randomGroups.get(floor(random(randomGroups.size()))).fade(2000);
+    LedGroup group = randomGroups.get(floor(random(randomGroups.size())));
+    if (random(1) < 0.5) {
+      group.pulse(2000);
+    } else {
+      group.fade(500);
+    }
   }
 }
 

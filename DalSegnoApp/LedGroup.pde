@@ -24,10 +24,22 @@ public class LedGroup {
     return _ledIndices.length;
   }
 
+  LedGroup addColor(color c) {
+    for (int i = 0; i < _ledIndices.length; i++) {
+      _lighting.addColor(_ledIndices[i], c);
+    }
+    return this;
+  }
+
   LedGroup setColor(color c) {
     for (int i = 0; i < _ledIndices.length; i++) {
       _lighting.setColor(_ledIndices[i], c);
     }
+    return this;
+  }
+
+  LedGroup addColor(int index, color c) {
+    _lighting.addColor(_ledIndices[index], c);
     return this;
   }
 
@@ -56,6 +68,11 @@ public class LedGroup {
 
   LedGroup fade(int durationMs) {
     _lighting.addAnimation(new AnimationFade(this, durationMs));
+    return this;
+  }
+
+  LedGroup pulse(int durationMs) {
+    _lighting.addAnimation(new AnimationPulse(this, durationMs));
     return this;
   }
 

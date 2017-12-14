@@ -21,6 +21,18 @@ public class Lighting {
     return new LedGroup(this, _numLeds);
   }
 
+  Lighting addColor(int index, color b) {
+    color a = _ledColors[index];
+    float ar = red(a);
+    float ag = green(a);
+    float ab = blue(a);
+    float br = red(b);
+    float bg = green(b);
+    float bb = blue(b);
+    _ledColors[index] = color(ar + br, ag + bg, ab + bb);
+    return this;
+  }
+
   Lighting setColor(int index, color c) {
     _ledColors[index] = c;
     return this;
@@ -40,6 +52,7 @@ public class Lighting {
   }
 
   void draw() {
+    resetColors();
     updateAnimations();
     writePixels();
   }
