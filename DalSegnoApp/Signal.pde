@@ -91,9 +91,12 @@ public class Signal {
     }
     if (m.checkAddrPattern("/note")) {
       //println("/note", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
-      _notes.add(new Note(m));
+      Note note = new Note(m);
+      _notes.add(note);
 
-      _numNotesThisBar++;
+      if (note.velocity() > 0) {
+        _numNotesThisBar++;
+      }
     }
     if (m.checkAddrPattern("/playing")) {
       //println("/playing", m.get(0).intValue());
@@ -101,9 +104,12 @@ public class Signal {
     }
     if (m.checkAddrPattern("/rthm")) {
       //println("/rthm", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
-      _rhythmNotes.add(new Note(m));
+      Note note = new Note(m);
+      _rhythmNotes.add(note);
 
-      _numRhythmNotesThisBar++;
+      if (note.velocity() > 0) {
+        _numRhythmNotesThisBar++;
+      }
     }
     if (m.checkAddrPattern("/tempo")) {
       //println("/tempo", m.get(0).floatValue());

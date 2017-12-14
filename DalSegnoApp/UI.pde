@@ -12,8 +12,7 @@ public class UI {
   private int _fftAvgSize;
   private ArrayList<ValueCollector> _bandValueCollectors;
   private ArrayList<Sparkline> _bandSparklines;
-  private ArrayList<Sparkline> _band5AverageSparklines;
-  private ArrayList<Sparkline> _band10AverageSparklines;
+  private ArrayList<Sparkline> _bandAverageSparklines;
 
   private Sparkline _noteSparkline;
   private Sparkline _rhythmNoteSparkline;
@@ -66,8 +65,7 @@ public class UI {
       .maxValue(_initialFftMaxValue);
 
     _bandSparklines = new ArrayList<Sparkline>();
-    _band5AverageSparklines = new ArrayList<Sparkline>();
-    _band10AverageSparklines = new ArrayList<Sparkline>();
+    _bandAverageSparklines = new ArrayList<Sparkline>();
     for (int i = 0; i < _fftAvgSize; i++) {
       _bandSparklines.add(
         new Sparkline("band" + i)
@@ -76,18 +74,11 @@ public class UI {
           .numValues(100)
           .maxValue(_initialFftMaxValue));
 
-      _band5AverageSparklines.add(
-        new Sparkline("band5Average" + i)
+      _bandAverageSparklines.add(
+        new Sparkline("bandAverage" + i)
           .x(100 + SPARKLINE_WIDTH + SPACING).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
           .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
           .numValues(100 - 5 + 1)
-          .maxValue(_initialFftMaxValue));
-
-      _band10AverageSparklines.add(
-        new Sparkline("band10Average" + i)
-          .x(100 + 2 * (SPARKLINE_WIDTH + SPACING)).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
-          .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
-          .numValues(100 - 10 + 1)
           .maxValue(_initialFftMaxValue));
     }
   }
@@ -168,11 +159,8 @@ public class UI {
       Sparkline bandSparkline = _bandSparklines.get(i);
       bandSparkline.values(bandValueCollector.values());
 
-      Sparkline band5AverageSparkline = _band5AverageSparklines.get(i);
-      band5AverageSparkline.values(bandValueCollector.getRunningAverage(5));
-
-      Sparkline band10AverageSparkline = _band10AverageSparklines.get(i);
-      band10AverageSparkline.values(bandValueCollector.getRunningAverage(10));
+      Sparkline bandAverageSparkline = _bandAverageSparklines.get(i);
+      bandAverageSparkline.values(bandValueCollector.getRunningAverage(5));
     }
   }
 
@@ -231,11 +219,8 @@ public class UI {
       Sparkline bandSparkline = _bandSparklines.get(i);
       bandSparkline.draw(g);
 
-      Sparkline band5AverageSparkline = _band5AverageSparklines.get(i);
-      band5AverageSparkline.draw(g);
-
-      Sparkline band10AverageSparkline = _band10AverageSparklines.get(i);
-      band10AverageSparkline.draw(g);
+      Sparkline bandAverageSparkline = _bandAverageSparklines.get(i);
+      bandAverageSparkline.draw(g);
     }
 
     _noteSparkline.draw(g);
@@ -262,8 +247,7 @@ public class UI {
     _fftSparkline.maxValue(v);
     for (int i = 0; i < _bandSparklines.size(); i++) {
       _bandSparklines.get(i).maxValue(v);
-      _band5AverageSparklines.get(i).maxValue(v);
-      _band10AverageSparklines.get(i).maxValue(v);
+      _bandAverageSparklines.get(i).maxValue(v);
     }
     return this;
   }
