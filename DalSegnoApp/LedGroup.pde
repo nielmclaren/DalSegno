@@ -1,3 +1,4 @@
+import java.util.Collections;
 
 public class LedGroup {
   private Lighting _lighting;
@@ -53,6 +54,11 @@ public class LedGroup {
     return this;
   }
 
+  LedGroup getRandomGroup(int numGroups) {
+    ArrayList<LedGroup> groups = getRandomGroups(numGroups);
+    return groups.get(floor(random(groups.size())));
+  }
+
   ArrayList<LedGroup> getRandomGroups(int numGroups) {
     ArrayList<ArrayList<Integer>> ledIndicesByGroup = new ArrayList<ArrayList<Integer>>();
     for (int group = 0; group < numGroups; group++) {
@@ -66,6 +72,7 @@ public class LedGroup {
     ArrayList<LedGroup> result = new ArrayList<LedGroup>();
     for (int group = 0; group < numGroups; group++) {
       ArrayList<Integer> ledIndices = ledIndicesByGroup.get(group);
+      Collections.shuffle(ledIndices);
       result.add(new LedGroup(_lighting).ledIndices(toArray(ledIndices)));
     }
     return result;
@@ -74,6 +81,11 @@ public class LedGroup {
   LedGroup fade(color c, int durationMs) {
     int delayMs = 0;
     _lighting.addAnimation(new AnimationFade(this, c, delayMs, durationMs));
+    return this;
+  }
+
+  LedGroup incrementalFade(color c, int incrementalDelayMs, int durationMs) {
+    _lighting.addAnimation(new AnimationIncrementalFade(this, c, incrementalDelayMs, durationMs));
     return this;
   }
 
