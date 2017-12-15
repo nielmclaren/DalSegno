@@ -1,12 +1,14 @@
 
 public class Lighting {
   private int _numLeds;
+  private int _numLedsPerStrand;
   private color[] _ledColors;
   private OPC _opc;
   private ArrayList<Animation> _animations;
 
   Lighting(PApplet app, Config config) {
     _numLeds = config.numLeds();
+    _numLedsPerStrand = config.numLedsPerStrand();
     _ledColors = new int[_numLeds];
 
     _opc = new OPC(app, config.fadeCandyIp(), config.fadeCandyPort());
@@ -19,6 +21,14 @@ public class Lighting {
 
   LedGroup getGroup() {
     return new LedGroup(this, _numLeds);
+  }
+
+  LedGroup getStrand(int index) {
+    int[] ledIndices = new int[_numLedsPerStrand];
+    for (int i = 0; i < _numLedsPerStrand; i++) {
+      ledIndices[i] = index * _numLedsPerStrand + i;
+    }
+    return new LedGroup(this, ledIndices);
   }
 
   Lighting addColor(int index, color b) {

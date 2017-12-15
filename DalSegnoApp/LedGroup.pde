@@ -7,6 +7,11 @@ public class LedGroup {
     _lighting = lighting;
   }
 
+  LedGroup(Lighting lighting, int[] ledIndices) {
+    _lighting = lighting;
+    _ledIndices = ledIndices;
+  }
+
   LedGroup(Lighting lighting, int numLeds) {
     _lighting = lighting;
     _ledIndices = new int[numLeds];

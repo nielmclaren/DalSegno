@@ -4,7 +4,11 @@ public class Config {
   }
 
   int numLeds() {
-    return 160;
+    return 480;
+  }
+
+  int numLedsPerStrand() {
+    return 60;
   }
 
   String fadeCandyIp() {
