@@ -78,19 +78,21 @@ public class Signal {
   }
 
   void oscEvent(OscMessage m) {
+    boolean debug = true;
+
     if (m.checkAddrPattern("/beat")) {
-      //println("/beat", m.get(0).intValue());
+      if (debug) println("/beat", m.get(0).intValue());
       _beat = m.get(0).intValue();
 
       _numNotesThisBar = 0;
       _numRhythmNotesThisBar = 0;
     }
     if (m.checkAddrPattern("/measureDivision")) {
-      //println("/measureDivision", m.get(0).floatValue());
+      if (debug) println("/measureDivision", m.get(0).floatValue());
       _measureDivision = m.get(0).floatValue();
     }
     if (m.checkAddrPattern("/note")) {
-      //println("/note", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
+      if (debug) println("/note", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
       Note note = new Note(m);
       _notes.add(note);
 
@@ -99,11 +101,11 @@ public class Signal {
       }
     }
     if (m.checkAddrPattern("/playing")) {
-      //println("/playing", m.get(0).intValue());
+      if (debug) println("/playing", m.get(0).intValue());
       _isPlaying = m.get(0).intValue() != 0;
     }
     if (m.checkAddrPattern("/rthm")) {
-      //println("/rthm", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
+      if (debug) println("/rthm", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
       Note note = new Note(m);
       _rhythmNotes.add(note);
 
@@ -112,7 +114,7 @@ public class Signal {
       }
     }
     if (m.checkAddrPattern("/tempo")) {
-      //println("/tempo", m.get(0).floatValue());
+      if (debug) println("/tempo", m.get(0).floatValue());
       _tempo = m.get(0).floatValue();
     }
   }
