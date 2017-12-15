@@ -49,5 +49,6 @@ void fftMaxValue(float v) {
 
 void controllerChange(int channel, int number, int value) {
   nk2.set(channel, number, value);
+  ui.controllerChange(channel, number, value);
   signalToLight.controllerChange(channel, number, value);
 }

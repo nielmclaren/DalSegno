@@ -33,6 +33,10 @@ public class UI {
 
   private Lighting _lighting;
 
+  private int _controllerChangeChannel;
+  private int _controllerChangeNumber;
+  private int _controllerChangeValue;
+
   UI(PApplet app, Config config, Lighting lighting) {
     _cp5 = new ControlP5(app);
     _config = config;
@@ -48,6 +52,10 @@ public class UI {
     _lighting = lighting;
 
     _isFirstSetup = false;
+
+    _controllerChangeChannel = -1;
+    _controllerChangeNumber = -1;
+    _controllerChangeValue = -1;
   }
 
   private void setupBandValueCollectors() {
@@ -253,6 +261,8 @@ public class UI {
 
     drawLedMap(g);
 
+    drawControllerChange(g);
+
     return this;
   }
 
@@ -269,40 +279,49 @@ public class UI {
       .moveTo(targetX + margin, targetY + margin)
       .scale(targetWidth - 2 * margin, targetHeight - 2 * margin);
 
-    pushStyle();
-    fill(16);
-    stroke(64);
-    rect(targetX, targetY, targetWidth, targetHeight);
+    g.pushStyle();
+    g.fill(16);
+    g.stroke(64);
+    g.rect(targetX, targetY, targetWidth, targetHeight);
 
-    ellipseMode(CENTER);
+    g.ellipseMode(CENTER);
     float radius = 4;
 
     List<PositionedLed> leds = ledMap.getLeds();
     Iterator it;
 
-    noStroke();
-    fill(0);
+    g.noStroke();
+    g.fill(0);
     it = leds.iterator();
     while (it.hasNext()) {
       PositionedLed led = (PositionedLed)it.next();
       PVector p = led.position();
-      ellipse(p.x, p.y, radius, radius);
+      g.ellipse(p.x, p.y, radius, radius);
     }
 
-    blendMode(ADD);
-    noStroke();
+    g.blendMode(ADD);
+    g.noStroke();
     it = leds.iterator();
     while (it.hasNext()) {
       PositionedLed led = (PositionedLed)it.next();
       color c = _lighting.getColor(led.index());
       if (c != black) {
         PVector p = led.position();
-        fill(c);
-        ellipse(p.x, p.y, radius, radius);
+        g.fill(c);
+        g.ellipse(p.x, p.y, radius, radius);
       }
     }
 
-    popStyle();
+    g.popStyle();
+  }
+
+  void drawControllerChange(PGraphics g) {
+    if (_controllerChangeChannel != -1) {
+      g.fill(128);
+      g.noStroke();
+      g.textSize(20);
+      g.text("input=" + _controllerChangeNumber + ", value=" + _controllerChangeValue, 20, height - 30);
+    }
   }
 
   UI fftAvgSize(int v) {
@@ -319,6 +338,13 @@ public class UI {
       _bandSparklines.get(i).maxValue(v);
       _bandAverageSparklines.get(i).maxValue(v);
     }
+    return this;
+  }
+
+  UI controllerChange(int channel, int number, int value) {
+    _controllerChangeChannel = channel;
+    _controllerChangeNumber = number;
+    _controllerChangeValue = value;
     return this;
   }
 }
