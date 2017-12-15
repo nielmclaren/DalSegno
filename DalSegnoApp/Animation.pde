@@ -6,8 +6,7 @@ public class Animation {
     _ledGroup = ledGroup;
   }
 
-  public void update() {
-  }
+  public void update() {}
 
   public boolean isComplete() {
     return true;

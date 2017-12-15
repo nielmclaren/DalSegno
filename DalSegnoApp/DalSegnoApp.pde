@@ -22,7 +22,7 @@ void setup() {
   nk2 = new NanoKontrol2(this, "nanokontrol2.json");
 
   lighting = new Lighting(this, config);
-  randomGroups = lighting.getGroup().getRandomGroups(8);
+  randomGroups = lighting.getGroup().getRandomGroups(32);
 
   palette = config.paletteInstagram();
 }
@@ -32,11 +32,11 @@ void draw() {
 
   ui.read(signal).draw(g);
 
-  if (frameCount % 50 == 0) {
+  if (frameCount % 20 == 0) {
     color c = palette.weightedColor();
     LedGroup group = randomGroups.get(floor(random(randomGroups.size())));
-    if (random(1) < nk2.getSliderf(7)) {
-      group.pulse(c, floor(nk2.getKnobf(0) * 2000));
+    if (random(1) < 1) {
+      group.pulse(c, floor(nk2.getKnobf(0) * 10000));
     } else {
       group.fade(c, 500);
     }
