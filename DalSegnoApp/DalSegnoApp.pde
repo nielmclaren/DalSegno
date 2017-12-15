@@ -9,6 +9,8 @@ Lighting lighting;
 ArrayList<LedGroup> randomGroups;
 Palette palette;
 
+SignalToLight signalToLight;
+
 void setup() {
   size(1280, 720, P2D);
 
@@ -25,22 +27,15 @@ void setup() {
   randomGroups = lighting.getGroup().getRandomGroups(32);
 
   palette = config.paletteInstagram();
+
+  signalToLight = new SignalToLight();
 }
 
 void draw() {
   background(0);
-
   ui.read(signal).draw(g);
 
-  if (frameCount % 20 == 0) {
-    color c = palette.weightedColor();
-    LedGroup group = randomGroups.get(floor(random(randomGroups.size())));
-    if (random(1) < 1) {
-      group.pulse(c, floor(nk2.getKnobf(0) * 10000));
-    } else {
-      group.fade(c, 500);
-    }
-  }
+  signalToLight.getLit(signal, lighting);
 }
 
 void fftMaxValue(float v) {
@@ -49,4 +44,5 @@ void fftMaxValue(float v) {
 
 void controllerChange(int channel, int number, int value) {
   nk2.set(channel, number, value);
+  signalToLight.controllerChange(channel, number, value);
 }
