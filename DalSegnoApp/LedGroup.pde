@@ -95,6 +95,11 @@ public class LedGroup {
     return this;
   }
 
+  LedGroup incrementalPulse(color c, int incrementalDelayMs, int durationMs) {
+    _lighting.addAnimation(new AnimationIncrementalPulse(this, c, incrementalDelayMs, durationMs));
+    return this;
+  }
+
   private int[] toArray(ArrayList<Integer> input) {
     int[] output = new int[input.size()];
     for (int i = 0; i < input.size(); i++) {

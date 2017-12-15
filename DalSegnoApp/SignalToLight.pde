@@ -7,9 +7,9 @@ class SignalToLight {
   }
 
   void getLit(Signal signal, Lighting lighting) {
-    if (frameCount % 30 == 0) {
+    if (frameCount % 100 == 0) {
       LedGroup randomGroup = randomGroups.get(floor(random(randomGroups.size())));
-      randomGroup.incrementalFade(color(255, 128, 0), 5, 2000);
+      randomGroup.incrementalPulse(color(255, 128, 0), 20, 2000);
     }
   }
 
