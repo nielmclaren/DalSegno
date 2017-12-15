@@ -4,15 +4,25 @@ LedMap leftLadder;
 LedMap rightLadder;
 LedMap rightClump;
 
+List<LedMap> ledMaps;
+int selectedIndex;
+
 PVector mousePress;
 
 void setup() {
   size(1024, 768);
 
-  leftShoes = new LedMap("layout_left_shoes.csv");
-  leftLadder = new LedMap("layout_left_ladder.csv");
-  rightLadder = new LedMap("layout_right_ladder.csv");
-  rightClump = new LedMap("layout_right_clump.csv");
+  LedMap leftShoes = new LedMap("layout_left_shoes.csv");
+  LedMap leftLadder = new LedMap("layout_left_ladder.csv");
+  LedMap rightLadder = new LedMap("layout_right_ladder.csv");
+  LedMap rightClump = new LedMap("layout_right_clump.csv");
+
+  ledMaps = new ArrayList<LedMap>();
+  ledMaps.add(leftShoes);
+  ledMaps.add(leftLadder);
+  ledMaps.add(rightLadder);
+  ledMaps.add(rightClump);
+  selectedIndex = 0;
 
   mousePress = null;
 }
@@ -20,15 +30,17 @@ void setup() {
 void draw() {
   background(0);
 
-  stroke(128);
-  noFill();
-
-  drawLeds(leftShoes.getLeds());
-
-  stroke(255);
-  fill(128);
-  PositionedLed led = leftShoes.getBottommostLed();
-  drawLed(led);
+  for (int i = 0; i < ledMaps.size(); i++) {
+    LedMap ledMap = ledMaps.get(i);
+    if (i == selectedIndex) {
+      fill(64);
+      stroke(128);
+    } else {
+      noFill();
+      stroke(64);
+    }
+    drawLeds(ledMap.getLeds());
+  }
 
   if (mousePress != null) {
     stroke(255);
@@ -60,10 +72,28 @@ void mousePressed() {
 void mouseReleased() {
   PVector mouseRelease = new PVector(mouseX, mouseY);
   if (mousePress.dist(mouseRelease) > 10) {
+    LedMap ledMap = ledMaps.get(selectedIndex);
     PVector delta = PVector.sub(mouseRelease, mousePress);
-    leftShoes.moveTo(mousePress.x, mousePress.y);
-    leftShoes.scale(delta.x, delta.y);
+    ledMap.moveTo(mousePress.x, mousePress.y);
+    ledMap.scale(delta.x, delta.y);
   }
 
   mousePress = null;
+}
+
+void keyReleased() {
+  switch (key) {
+    case 'j':
+      selectedIndex--;
+      if (selectedIndex < 0) {
+        selectedIndex = ledMaps.size() - 1;
+      }
+      break;
+    case 'k':
+      selectedIndex++;
+      if (selectedIndex >= ledMaps.size()) {
+        selectedIndex = 0;
+      }
+      break;
+  }
 }
