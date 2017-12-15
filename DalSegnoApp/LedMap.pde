@@ -67,6 +67,11 @@ class LedMap {
     return _indexToPosition.keySet().size();
   }
 
+  PositionedLed getRandomLed() {
+    List<PositionedLed> leds = getLeds();
+    return leds.get(floor(random(leds.size())));
+  }
+
   List<PositionedLed> getLeds() {
     return new ArrayList<PositionedLed>(_indexToPosition.values());
   }

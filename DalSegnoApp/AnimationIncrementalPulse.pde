@@ -18,7 +18,7 @@ public class AnimationIncrementalPulse extends Animation {
     int numLeds = ledGroup().numLeds();
     for (int i = 0; i < numLeds; i++) {
       if (now - _createdMs > i * _incrementalDelayMs) {
-        float t = map(now - _createdMs, 0, _durationMs, 0, 1);
+        float t = map(now - _createdMs - i * _incrementalDelayMs, 0, _durationMs, 0, 1);
         float tt = t < 0.5 ? t / 0.5 : (1 - t) / 0.5;
         color c = lerpColor(color(0), _color, tt);
         ledGroup().addColor(i, c);

@@ -64,4 +64,17 @@ public class LedGraph {
   PositionedLed getEdgeTarget(DefaultEdge edge) {
     return (PositionedLed)_graph.getEdgeTarget(edge);
   }
+
+  List<PositionedLed> getRandomWalk(int steps) {
+    List<PositionedLed> result = new ArrayList<PositionedLed>();
+    PositionedLed startLed = _ledMap.getRandomLed();
+    RandomWalkIterator it = new RandomWalkIterator(_graph, startLed);
+    int currStep = 0;
+    while (it.hasNext() && currStep < steps) {
+      PositionedLed led = (PositionedLed)it.next();
+      result.add(led);
+      currStep++;
+    }
+    return result;
+  }
 }

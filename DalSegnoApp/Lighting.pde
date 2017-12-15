@@ -42,6 +42,11 @@ public class Lighting {
     return new LedGroup(this, ledIndices);
   }
 
+  LedGroup getWalkGroup(int steps) {
+    List<Integer> ledIndices = Util.positionedLedsToIndices(_ledGraph.getRandomWalk(steps));
+    return new LedGroup(this, ledIndices);
+  }
+
   Lighting addColor(int index, color b) {
     color a = _ledColors[index];
     float ar = red(a);
@@ -70,6 +75,10 @@ public class Lighting {
   Lighting ledMap(LedMap ledMap) {
     _ledMap = ledMap;
     return this;
+  }
+
+  LedGraph ledGraph() {
+    return _ledGraph;
   }
 
   Lighting resetColors() {

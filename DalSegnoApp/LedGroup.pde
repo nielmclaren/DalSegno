@@ -13,6 +13,14 @@ public class LedGroup {
     _ledIndices = ledIndices;
   }
 
+  LedGroup(Lighting lighting, List<Integer> ledIndices) {
+    _lighting = lighting;
+    _ledIndices = new int[ledIndices.size()];
+    for (int i = 0; i < ledIndices.size(); i++) {
+      _ledIndices[i] = ledIndices.get(i);
+    }
+  }
+
   LedGroup(Lighting lighting, int numLeds) {
     _lighting = lighting;
     _ledIndices = new int[numLeds];
@@ -64,9 +72,9 @@ public class LedGroup {
     for (int group = 0; group < numGroups; group++) {
       ledIndicesByGroup.add(new ArrayList<Integer>());
     }
-    for (int ledIndex = 0; ledIndex < _ledIndices.length; ledIndex++) {
+    for (int i = 0; i < _ledIndices.length; i++) {
       int group = floor(random(numGroups));
-      ledIndicesByGroup.get(group).add(ledIndex);
+      ledIndicesByGroup.get(group).add(_ledIndices[i]);
     }
 
     ArrayList<LedGroup> result = new ArrayList<LedGroup>();
