@@ -12,10 +12,10 @@ PVector mousePress;
 void setup() {
   size(1024, 768);
 
-  LedMap leftShoes = new LedMap("layout_left_shoes.csv");
-  LedMap leftLadder = new LedMap("layout_left_ladder.csv");
-  LedMap rightLadder = new LedMap("layout_right_ladder.csv");
-  LedMap rightClump = new LedMap("layout_right_clump.csv");
+  LedMap leftShoes = new LedMap().load("layout_left_shoes.csv");
+  LedMap leftLadder = new LedMap().load("layout_left_ladder.csv");
+  LedMap rightLadder = new LedMap().load("layout_right_ladder.csv");
+  LedMap rightClump = new LedMap().load("layout_right_clump.csv");
 
   ledMaps = new ArrayList<LedMap>();
   ledMaps.add(leftShoes);
@@ -65,6 +65,23 @@ void drawLed(PositionedLed led) {
   popStyle();
 }
 
+void saveMap() {
+  Map<Integer, PositionedLed> indexToLed = new HashMap<Integer, PositionedLed>();
+  for (LedMap ledMap : ledMaps) {
+    List<PositionedLed> leds = ledMap.getLeds();
+    for (PositionedLed led : leds) {
+      if (indexToLed.get(led.index()) != null) {
+        println("Collision: " + led.index());
+      }
+      indexToLed.put(led.index(), led);
+    }
+  }
+
+  LedMap ledMap = new LedMap();
+  ledMap.loadLeds(new ArrayList(indexToLed.values()));
+  ledMap.save("output.csv");
+}
+
 void mousePressed() {
   mousePress = new PVector(mouseX, mouseY);
 }
@@ -94,6 +111,10 @@ void keyReleased() {
       if (selectedIndex >= ledMaps.size()) {
         selectedIndex = 0;
       }
+      break;
+
+    case 's':
+      saveMap();
       break;
   }
 }

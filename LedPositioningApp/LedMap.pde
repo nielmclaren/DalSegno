@@ -5,11 +5,10 @@ import java.util.Map;
 class LedMap {
   private HashMap<Integer, PositionedLed> _indexToPosition;
   
-  LedMap(String filename) {
-    loadLedMap(filename);
+  LedMap() {
   }
 
-  private void loadLedMap(String filename) {
+  LedMap load(String filename) {
     List<PositionedLed> leds = new ArrayList<PositionedLed>();
     Table table = loadTable(filename, "header");
     for (TableRow row : table.rows()) {
@@ -22,6 +21,7 @@ class LedMap {
       }
     }
     loadLeds(leds);
+    return this;
   }
 
   LedMap loadLeds(List<PositionedLed> leds) {
@@ -31,6 +31,27 @@ class LedMap {
       PositionedLed led = (PositionedLed)it.next();
       _indexToPosition.put(led.index(), led);
     }
+    return this;
+  }
+
+  LedMap save(String filename) {
+    Table table = new Table();
+    table.addColumn("address");
+    table.addColumn("x");
+    table.addColumn("y");
+    table.addColumn("z");
+
+    List<PositionedLed> leds = getLeds();
+    for (PositionedLed led : leds) {
+      PVector pos = led.position();
+      TableRow row = table.addRow();
+      row.setInt("address", led.index());
+      row.setFloat("x", pos.x);
+      row.setFloat("y", pos.y);
+      row.setFloat("z", pos.z);
+    }
+
+    saveTable(table, filename);
     return this;
   }
 
