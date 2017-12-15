@@ -10,7 +10,7 @@ class LedMap {
   }
 
   private void loadLedMap(String filename) {
-    _indexToPosition = new HashMap<Integer, PositionedLed>();
+    List<PositionedLed> leds = new ArrayList<PositionedLed>();
     Table table = loadTable(filename, "header");
     for (TableRow row : table.rows()) {
       int index = row.getInt("address");
@@ -18,9 +18,20 @@ class LedMap {
       float y = row.getFloat("y");
       float z = row.getFloat("z");
       if (x != 0 || y != 0 || z != 0) {
-        _indexToPosition.put(index, new PositionedLed(index, x, y, z));
+        leds.add(new PositionedLed(index, x, y, z));
       }
     }
+    loadLeds(leds);
+  }
+
+  LedMap loadLeds(List<PositionedLed> leds) {
+    _indexToPosition = new HashMap<Integer, PositionedLed>();
+    Iterator it = leds.iterator();
+    while (it.hasNext()) {
+      PositionedLed led = (PositionedLed)it.next();
+      _indexToPosition.put(led.index(), led);
+    }
+    return this;
   }
 
   PVector getPosition(int index) {
@@ -70,27 +81,6 @@ class LedMap {
     }
     return nearestLed;
   }
-
-/*
-  List<PositionedLed> getLedsNearest(PVector target, int numResults, int exceptIndex) {
-    List<DistanceLed> distanceLeds = getDistanceLeds(target, exceptIndex);
-    distanceLeds.sort(new DistanceLedComparator());
-    return distanceLeds.subList(0, numResults);
-  }
-
-  private List<DistanceLed> getDistanceLeds(PVector target, int exceptIndex) {
-    List<DistanceLed> result = new ArrayList<DistanceLed>();
-    Iterator it = _indexToPosition.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry pair = (Map.Entry)it.next();
-      PositionedLed led = (PositionedLed)pair.getValue();
-      if (led.index() != exceptIndex) {
-        result.add(new DistanceLed(led, PVector.sub(led.position(), target)));
-      }
-    }
-    return result;
-  }
-*/
 
   PositionedLed getRightmostLed() {
     PositionedLed rightmostLed = null;
@@ -146,5 +136,27 @@ class LedMap {
       }
     }
     return bottommostLed;
+  }
+
+  LedMap moveTo(float x, float y) {
+    float left = getLeftmostLed().position().x;
+    float top = getTopmostLed().position().y;
+    float right = getRightmostLed().position().x;
+    float bottom = getBottommostLed().position().y;
+
+    float dx = x - left;
+    float dy = y - top;
+
+    List<PositionedLed> movedLeds = new ArrayList<PositionedLed>();
+    Iterator it = _indexToPosition.values().iterator();
+    while (it.hasNext()) {
+      PositionedLed led = (PositionedLed)it.next();
+      PVector pos = led.position();
+      movedLeds.add(new PositionedLed(led.index(), pos.x + dx, pos.y + dy, pos.z));
+    }
+
+    loadLeds(movedLeds);
+
+    return this;
   }
 }

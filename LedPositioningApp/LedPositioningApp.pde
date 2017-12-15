@@ -8,6 +8,9 @@ void setup() {
   size(1024, 768);
 
   leftShoes = new LedMap("layout_left_shoes.csv");
+  leftLadder = new LedMap("layout_left_ladder.csv");
+  rightLadder = new LedMap("layout_right_ladder.csv");
+  rightClump = new LedMap("layout_right_clump.csv");
 }
 
 void draw() {
@@ -37,4 +40,8 @@ void drawLed(PositionedLed led) {
   ellipseMode(CENTER);
   ellipse(p.x, p.y, radius, radius);
   popStyle();
+}
+
+void mouseReleased() {
+  leftShoes.moveTo(mouseX, mouseY);
 }
