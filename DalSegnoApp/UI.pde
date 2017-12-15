@@ -31,7 +31,9 @@ public class UI {
   private Sparkline _rhythmNotesThisBarSparkline;
   private Sparkline _anyNotesThisBarSparkline;
 
-  UI(PApplet app, Config config) {
+  private Lighting _lighting;
+
+  UI(PApplet app, Config config, Lighting lighting) {
     _cp5 = new ControlP5(app);
     _config = config;
     _fftAvgSize = 0;
@@ -42,6 +44,8 @@ public class UI {
     setupNoteValueCollectors();
     setupNoteHistory();
     setupNoteSparklines();
+
+    _lighting = lighting;
 
     _isFirstSetup = false;
   }
@@ -55,7 +59,7 @@ public class UI {
 
   private void setupFftSparklines() {
     _fftSparkline = new Sparkline("fft")
-      .x(100).y(50).width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
+      .x(10).y(50).width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
       .numValues(_config.maxFftHistorySize())
       .maxValue(_config.fftMaxValue());
 
@@ -64,14 +68,14 @@ public class UI {
     for (int i = 0; i < _fftAvgSize; i++) {
       _bandSparklines.add(
         new Sparkline("band" + i)
-          .x(100).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
+          .x(10).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
           .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
           .numValues(_config.maxFftHistorySize())
           .maxValue(_config.fftMaxValue()));
 
       _bandAverageSparklines.add(
         new Sparkline("bandAverage" + i)
-          .x(100 + SPARKLINE_WIDTH + SPACING).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
+          .x(10 + SPARKLINE_WIDTH + SPACING).y(50 + (i + 1) * (SPARKLINE_HEIGHT + SPACING))
           .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
           .numValues(_config.maxFftHistorySize() - 5 + 1)
           .maxValue(_config.fftMaxValue()));
@@ -84,7 +88,7 @@ public class UI {
       .setBroadcast(false)
       .setRange(1, 255)
       .setValue(_config.fftMaxValue())
-      .setPosition(100, 50 + (_fftAvgSize + 1) * (SPARKLINE_HEIGHT + SPACING))
+      .setPosition(10, 50 + (_fftAvgSize + 1) * (SPARKLINE_HEIGHT + SPACING))
       .setSize(100, 15)
       .setBroadcast(true);
   }
@@ -116,40 +120,40 @@ public class UI {
 
   private void setupNoteSparklines() {
     _noteSparkline = new Sparkline("note")
-      .x(100 + 2 * (SPARKLINE_WIDTH + SPACING)).y(50)
+      .x(10 + 2 * (SPARKLINE_WIDTH + SPACING)).y(50)
       .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
       .maxValue(127);
 
     _noteChart = new NoteChart("note")
-      .x(100 + 2 * (SPARKLINE_WIDTH + SPACING))
+      .x(10 + 2 * (SPARKLINE_WIDTH + SPACING))
       .y(50 + SPARKLINE_HEIGHT + SPACING)
       .width(NOTE_CHART_WIDTH).height(NOTE_CHART_HEIGHT);
 
     _rhythmNoteSparkline = new Sparkline("rhythmNote")
-      .x(100 + 2 * (SPARKLINE_WIDTH + SPACING))
+      .x(10 + 2 * (SPARKLINE_WIDTH + SPACING))
       .y(50 + SPARKLINE_HEIGHT + SPACING + NOTE_CHART_HEIGHT + 2 * SPACING)
       .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
       .maxValue(127);
 
     _rhythmNoteChart = new NoteChart("rhythmNote")
-      .x(100 + 2 * (SPARKLINE_WIDTH + SPACING))
+      .x(10 + 2 * (SPARKLINE_WIDTH + SPACING))
       .y(50 + SPARKLINE_HEIGHT + SPACING + NOTE_CHART_HEIGHT + 2 * SPACING + SPARKLINE_HEIGHT + SPACING)
       .width(NOTE_CHART_WIDTH).height(NOTE_CHART_HEIGHT);
 
     _notesThisBarSparkline = new Sparkline("notesThisBar")
-      .x(100 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING)
+      .x(10 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING)
       .y(50 + 1 * (SPARKLINE_HEIGHT + SPACING))
       .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
       .numValues(_config.maxNoteHistorySize())
       .maxValue(32);
     _rhythmNotesThisBarSparkline = new Sparkline("rhythmNotesThisBar")
-      .x(100 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING)
+      .x(10 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING)
       .y(50 + 2 * (SPARKLINE_HEIGHT + SPACING))
       .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
       .numValues(_config.maxNoteHistorySize())
       .maxValue(32);
     _anyNotesThisBarSparkline = new Sparkline("anyNotesThisBar")
-      .x(100 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING)
+      .x(10 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING)
       .y(50 + 3 * (SPARKLINE_HEIGHT + SPACING))
       .width(SPARKLINE_WIDTH).height(SPARKLINE_HEIGHT)
       .numValues(_config.maxNoteHistorySize())
@@ -247,7 +251,58 @@ public class UI {
     _rhythmNotesThisBarSparkline.draw(g);
     _anyNotesThisBarSparkline.draw(g);
 
+    drawLedMap(g);
+
     return this;
+  }
+
+  void drawLedMap(PGraphics g) {
+    color black = color(0);
+
+    float targetX =  10 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING;
+    float targetY = 50 + 4 * (SPARKLINE_HEIGHT + SPACING);
+    float targetWidth = 550;
+    float targetHeight = 270;
+    float margin = 10;
+
+    LedMap ledMap = new LedMap(_lighting.ledMap())
+      .moveTo(targetX + margin, targetY + margin)
+      .scale(targetWidth - 2 * margin, targetHeight - 2 * margin);
+
+    pushStyle();
+    fill(16);
+    stroke(64);
+    rect(targetX, targetY, targetWidth, targetHeight);
+
+    ellipseMode(CENTER);
+    float radius = 4;
+
+    List<PositionedLed> leds = ledMap.getLeds();
+    Iterator it;
+
+    noStroke();
+    fill(0);
+    it = leds.iterator();
+    while (it.hasNext()) {
+      PositionedLed led = (PositionedLed)it.next();
+      PVector p = led.position();
+      ellipse(p.x, p.y, radius, radius);
+    }
+
+    blendMode(ADD);
+    noStroke();
+    it = leds.iterator();
+    while (it.hasNext()) {
+      PositionedLed led = (PositionedLed)it.next();
+      color c = _lighting.getColor(led.index());
+      if (c != black) {
+        PVector p = led.position();
+        fill(c);
+        ellipse(p.x, p.y, radius, radius);
+      }
+    }
+
+    popStyle();
   }
 
   UI fftAvgSize(int v) {

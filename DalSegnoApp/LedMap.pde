@@ -8,6 +8,10 @@ class LedMap {
   LedMap() {
   }
 
+  LedMap(LedMap ledMap) {
+    _indexToPosition = new HashMap<Integer, PositionedLed>(ledMap._indexToPosition);
+  }
+
   LedMap load(String filename) {
     List<PositionedLed> leds = new ArrayList<PositionedLed>();
     Table table = loadTable(filename, "header");

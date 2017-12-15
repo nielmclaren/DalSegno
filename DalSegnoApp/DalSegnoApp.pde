@@ -3,9 +3,12 @@ import controlP5.*;
 Config config;
 
 Signal signal;
+
+Lighting lighting;
+
 UI ui;
 NanoKontrol2 nk2;
-Lighting lighting;
+
 ArrayList<LedGroup> randomGroups;
 Palette palette;
 
@@ -13,26 +16,28 @@ SignalToLight signalToLight;
 
 void setup() {
   size(1280, 720, P2D);
+  background(0);
 
   config = new Config();
 
   signal = new Signal(this);
 
-  ui = new UI(this, config)
+  lighting = new Lighting(this, config);
+
+  ui = new UI(this, config, lighting)
     .fftAvgSize(signal.getFft().avgSize());
 
   nk2 = new NanoKontrol2(this, "nanokontrol2.json");
 
-  lighting = new Lighting(this, config);
   randomGroups = lighting.getGroup().getRandomGroups(32);
-
   palette = config.paletteInstagram();
 
   signalToLight = new SignalToLight();
+  signalToLight.setup(signal, lighting);
 }
 
 void draw() {
-  background(0);
+  background(8);
   ui.read(signal).draw(g);
 
   signalToLight.getLit(signal, lighting);

@@ -5,6 +5,8 @@ public class Lighting {
   private color[] _ledColors;
   private OPC _opc;
   private ArrayList<Animation> _animations;
+  private LedMap _ledMap;
+  private LedGraph _ledGraph;
 
   Lighting(PApplet app, Config config) {
     _numLeds = config.numLeds();
@@ -15,8 +17,17 @@ public class Lighting {
     _opc.setPixelCount(_numLeds);
 
     _animations = new ArrayList<Animation>();
+    _ledMap = new LedMap().load("layout.csv");
+    _ledGraph = new LedGraph(_ledMap);
+    regenerateGraph();
 
     app.registerMethod("draw", this);
+  }
+
+  Lighting regenerateGraph() {
+    _ledGraph = new LedGraph(_ledMap)
+      .generateRandomNeighborEdges(9, 0.35);
+    return this;
   }
 
   LedGroup getGroup() {
@@ -43,8 +54,21 @@ public class Lighting {
     return this;
   }
 
+  color getColor(int index) {
+    return _ledColors[index];
+  }
+
   Lighting setColor(int index, color c) {
     _ledColors[index] = c;
+    return this;
+  }
+
+  LedMap ledMap() {
+    return _ledMap;
+  }
+
+  Lighting ledMap(LedMap ledMap) {
+    _ledMap = ledMap;
     return this;
   }
 
