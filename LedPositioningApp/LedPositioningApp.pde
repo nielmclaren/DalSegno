@@ -4,6 +4,8 @@ LedMap leftLadder;
 LedMap rightLadder;
 LedMap rightClump;
 
+PVector mousePress;
+
 void setup() {
   size(1024, 768);
 
@@ -11,6 +13,8 @@ void setup() {
   leftLadder = new LedMap("layout_left_ladder.csv");
   rightLadder = new LedMap("layout_right_ladder.csv");
   rightClump = new LedMap("layout_right_clump.csv");
+
+  mousePress = null;
 }
 
 void draw() {
@@ -25,6 +29,13 @@ void draw() {
   fill(128);
   PositionedLed led = leftShoes.getBottommostLed();
   drawLed(led);
+
+  if (mousePress != null) {
+    stroke(255);
+    noFill();
+    rectMode(CORNERS);
+    rect(mousePress.x, mousePress.y, mouseX, mouseY);
+  }
 }
 
 void drawLeds(List<PositionedLed> leds) {
@@ -42,6 +53,17 @@ void drawLed(PositionedLed led) {
   popStyle();
 }
 
+void mousePressed() {
+  mousePress = new PVector(mouseX, mouseY);
+}
+
 void mouseReleased() {
-  leftShoes.moveTo(mouseX, mouseY);
+  PVector mouseRelease = new PVector(mouseX, mouseY);
+  if (mousePress.dist(mouseRelease) > 10) {
+    PVector delta = PVector.sub(mouseRelease, mousePress);
+    leftShoes.moveTo(mousePress.x, mousePress.y);
+    leftShoes.scale(delta.x, delta.y);
+  }
+
+  mousePress = null;
 }

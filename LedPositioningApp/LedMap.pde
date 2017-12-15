@@ -141,8 +141,6 @@ class LedMap {
   LedMap moveTo(float x, float y) {
     float left = getLeftmostLed().position().x;
     float top = getTopmostLed().position().y;
-    float right = getRightmostLed().position().x;
-    float bottom = getBottommostLed().position().y;
 
     float dx = x - left;
     float dy = y - top;
@@ -153,6 +151,40 @@ class LedMap {
       PositionedLed led = (PositionedLed)it.next();
       PVector pos = led.position();
       movedLeds.add(new PositionedLed(led.index(), pos.x + dx, pos.y + dy, pos.z));
+    }
+
+    loadLeds(movedLeds);
+
+    return this;
+  }
+
+  LedMap scale(float targetWidth, float targetHeight) {
+    float left = getLeftmostLed().position().x;
+    float top = getTopmostLed().position().y;
+    float right = getRightmostLed().position().x;
+    float bottom = getBottommostLed().position().y;
+
+    float currentWidth = right - left;
+    float currentHeight = bottom - top;
+
+    float currentAspect = currentWidth / currentHeight;
+    float targetAspect = targetWidth / targetHeight;
+
+    float scale;
+    if (currentAspect < targetAspect) {
+      scale = targetHeight / currentHeight;
+    } else {
+      scale = targetWidth / currentWidth;
+    }
+
+    List<PositionedLed> movedLeds = new ArrayList<PositionedLed>();
+    Iterator it = _indexToPosition.values().iterator();
+    while (it.hasNext()) {
+      PositionedLed led = (PositionedLed)it.next();
+      PVector pos = led.position();
+      float dx = pos.x - left;
+      float dy = pos.y - top;
+      movedLeds.add(new PositionedLed(led.index(), left + dx * scale, top + dy * scale, pos.z));
     }
 
     loadLeds(movedLeds);
