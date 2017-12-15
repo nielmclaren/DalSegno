@@ -8,8 +8,8 @@ class SignalToLight {
 
   void getLit(Signal signal, Lighting lighting) {
     if (frameCount % 100 == 0) {
-      LedGroup randomGroup = lighting.getWalkGroup(30);
-      randomGroup.incrementalFade(color(255, 128, 0), 100, 2000);
+      LedGroup randomGroup = lighting.getBreadthFirstGroup(30);
+      randomGroup.incrementalFade(color(255, 128, 0), 5, 2000);
     }
   }
 

@@ -47,6 +47,11 @@ public class Lighting {
     return new LedGroup(this, ledIndices);
   }
 
+  LedGroup getBreadthFirstGroup(int steps) {
+    List<Integer> ledIndices = Util.positionedLedsToIndices(_ledGraph.getBreadthFirst(steps));
+    return new LedGroup(this, ledIndices);
+  }
+
   Lighting addColor(int index, color b) {
     color a = _ledColors[index];
     float ar = red(a);

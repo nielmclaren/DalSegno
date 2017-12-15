@@ -68,7 +68,20 @@ public class LedGraph {
   List<PositionedLed> getRandomWalk(int steps) {
     List<PositionedLed> result = new ArrayList<PositionedLed>();
     PositionedLed startLed = _ledMap.getRandomLed();
-    RandomWalkIterator it = new RandomWalkIterator(_graph, startLed);
+    AbstractGraphIterator it = new RandomWalkIterator(_graph, startLed);
+    int currStep = 0;
+    while (it.hasNext() && currStep < steps) {
+      PositionedLed led = (PositionedLed)it.next();
+      result.add(led);
+      currStep++;
+    }
+    return result;
+  }
+
+  List<PositionedLed> getBreadthFirst(int steps) {
+    List<PositionedLed> result = new ArrayList<PositionedLed>();
+    PositionedLed startLed = _ledMap.getRandomLed();
+    AbstractGraphIterator it = new BreadthFirstIterator(_graph, startLed);
     int currStep = 0;
     while (it.hasNext() && currStep < steps) {
       PositionedLed led = (PositionedLed)it.next();
