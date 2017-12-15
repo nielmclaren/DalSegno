@@ -8,6 +8,8 @@ public class Lighting {
   private LedMap _ledMap;
   private LedGraph _ledGraph;
 
+  private float _masterMultiplier;
+
   Lighting(PApplet app, Config config) {
     _numLeds = config.numLeds();
     _numLedsPerStrand = config.numLedsPerStrand();
@@ -20,6 +22,8 @@ public class Lighting {
     _ledMap = new LedMap().load("layout.csv");
     _ledGraph = new LedGraph(_ledMap);
     regenerateGraph();
+
+    _masterMultiplier = 1;
 
     app.registerMethod("draw", this);
   }
@@ -99,6 +103,11 @@ public class Lighting {
     return this;
   }
 
+  Lighting masterMultiplier(float v) {
+    _masterMultiplier = constrain(v, 0, 1);
+    return this;
+  }
+
   void draw() {
     resetColors();
     updateAnimations();
@@ -125,6 +134,6 @@ public class Lighting {
   }
 
   private color transformPixel(color c) {
-    return color(green(c), red(c), blue(c));
+    return color(green(c) * _masterMultiplier, red(c) * _masterMultiplier, blue(c) * _masterMultiplier);
   }
 }

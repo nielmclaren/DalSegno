@@ -39,6 +39,7 @@ void setup() {
 void draw() {
   background(8);
   ui.read(signal).draw(g);
+  lighting.masterMultiplier(nk2.getSliderf(7));
 
   signalToLight.getLit(signal, lighting);
 }
