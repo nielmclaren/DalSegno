@@ -12,6 +12,13 @@ PVector mousePress;
 void setup() {
   size(1024, 768);
 
+  ledMaps = new ArrayList<LedMap>();
+  selectedIndex = 0;
+
+  mousePress = null;
+}
+
+void loadPieces() {
   LedMap leftShoes = new LedMap().load("layout_left_shoes.csv");
   LedMap leftLadder = new LedMap().load("layout_left_ladder.csv");
   LedMap rightLadder = new LedMap().load("layout_right_ladder.csv");
@@ -23,12 +30,21 @@ void setup() {
   ledMaps.add(rightLadder);
   ledMaps.add(rightClump);
   selectedIndex = 0;
+}
 
-  mousePress = null;
+void loadOutput() {
+  LedMap output = new LedMap().load("output.csv");
+
+  ledMaps = new ArrayList<LedMap>();
+  ledMaps.add(output);
+  selectedIndex = 0;
 }
 
 void draw() {
   background(0);
+
+  fill(255);
+  text("i - Load input pieces\nj/k - cycle input pieces\ns - save output.csv\no - Load output result", 20, 20);
 
   for (int i = 0; i < ledMaps.size(); i++) {
     LedMap ledMap = ledMaps.get(i);
@@ -100,6 +116,13 @@ void mouseReleased() {
 
 void keyReleased() {
   switch (key) {
+    case 'i':
+      loadPieces();
+      break;
+    case 'o':
+      loadOutput();
+      break;
+
     case 'j':
       selectedIndex--;
       if (selectedIndex < 0) {
