@@ -259,6 +259,9 @@ public class UI {
     _rhythmNotesThisBarSparkline.draw(g);
     _anyNotesThisBarSparkline.draw(g);
 
+    drawNoteInfo(g);
+    drawRhythmNoteInfo(g);
+
     drawLedMap(g);
 
     drawControllerChange(g);
@@ -266,7 +269,39 @@ public class UI {
     return this;
   }
 
-  void drawLedMap(PGraphics g) {
+  private void drawNoteInfo(PGraphics g) {
+    int note = _noteChart.getHoverNote();
+    if (note >= 0) {
+      float x = _noteChart.x();
+      float y = _noteChart.y();
+      float w = _noteChart.width();
+
+      g.pushStyle();
+      g.fill(128);
+      g.noStroke();
+      g.textSize(16);
+      g.text("note " + note, x + w - 60, y - 20);
+      g.popStyle();
+    } 
+  }
+
+  private void drawRhythmNoteInfo(PGraphics g) {
+    int note = _rhythmNoteChart.getHoverNote();
+    if (note >= 0) {
+      float x = _rhythmNoteChart.x();
+      float y = _rhythmNoteChart.y();
+      float w = _rhythmNoteChart.width();
+
+      g.pushStyle();
+      g.fill(128);
+      g.noStroke();
+      g.textSize(16);
+      g.text("rthm " + note, x + w - 60, y - 20);
+      g.popStyle();
+    }
+  }
+
+  private void drawLedMap(PGraphics g) {
     color black = color(0);
 
     float targetX =  10 + 2 * (SPARKLINE_WIDTH + SPACING) + NOTE_CHART_WIDTH + SPACING;
@@ -317,10 +352,12 @@ public class UI {
 
   void drawControllerChange(PGraphics g) {
     if (_controllerChangeChannel != -1) {
+      g.pushStyle();
       g.fill(128);
       g.noStroke();
       g.textSize(20);
       g.text("input=" + _controllerChangeNumber + ", value=" + _controllerChangeValue, 20, height - 30);
+      g.popStyle();
     }
   }
 

@@ -20,6 +20,9 @@ public class Signal {
   private int _numNotesThisBar;
   private int _numRhythmNotesThisBar;
 
+  private boolean[] _notesJustPlayed;
+  private boolean[] _notesPlayedThisBar;
+
   Signal(PApplet app) {
     _minim = new Minim(app);
     _in = _minim.getLineIn();
@@ -37,6 +40,9 @@ public class Signal {
 
     _numNotesThisBar = 0;
     _numRhythmNotesThisBar = 0;
+
+    _notesJustPlayed = new boolean[127];
+    _notesPlayedThisBar = new boolean[127];
 
     app.registerMethod("draw", this);
   }
@@ -60,6 +66,7 @@ public class Signal {
   ArrayList<Note> readNotes() {
     ArrayList<Note> result = _notes;
     _notes = new ArrayList<Note>();
+    resetNotes(_notesJustPlayed);
     return result;
   }
 
@@ -77,12 +84,28 @@ public class Signal {
     return _numRhythmNotesThisBar;
   }
 
+  boolean isNoteJustPlayed(int note) {
+    return _notesJustPlayed[note];
+  }
+
+  boolean isNotePlayedThisBar(int note) {
+    return _notesPlayedThisBar[note];
+  }
+
+  private void resetNotes(boolean[] notes) {
+    for (int i = 0; i < notes.length; i++) {
+      notes[i] = false;
+    }
+  }
+
   void oscEvent(OscMessage m) {
     boolean debug = true;
 
     if (m.checkAddrPattern("/beat")) {
       if (debug) println("/beat", m.get(0).intValue());
       _beat = m.get(0).intValue();
+
+      resetNotes(_notesPlayedThisBar);
 
       _numNotesThisBar = 0;
       _numRhythmNotesThisBar = 0;
@@ -95,6 +118,9 @@ public class Signal {
       if (debug) println("/note", m.get(0).intValue(), m.get(1).intValue(), m.get(2).intValue());
       Note note = new Note(m);
       _notes.add(note);
+
+      _notesJustPlayed[note.note()] = true;
+      _notesPlayedThisBar[note.note()] = true;
 
       if (note.velocity() > 0) {
         _numNotesThisBar++;

@@ -27,8 +27,26 @@ class NoteChart {
 
     g.popStyle();
   }
+
+  float x() {
+    return _x;
+  }
+  
+  float y() {
+    return _y;
+  }
+
+  float width() {
+    return _width;
+  }
+
+  float height() {
+    return _height;
+  }
     
   private void drawChart(PGraphics g) {
+    int highlightNote = getHoverNote();
+
     float[] noteStates = new float[127];
     for (int i = 0; i < 127; i++) {
       noteStates[i] = 0.;
@@ -46,11 +64,23 @@ class NoteChart {
 
         if (noteStates[note] > 0) {
           g.noStroke();
-          g.fill(128);
+          g.fill(note == highlightNote ? 255 : 128);
           g.rect(_x + time * w, _y + (127 - note - 1) * h, w, h);
         }
       }
     }
+  }
+
+  int getHoverNote() {
+    float x = _x;
+    float y = _y;
+    float w = _width;
+    float h = _height;
+    if (x < mouseX && mouseX < x + w && y < mouseY && mouseY < y + h) {
+      float dy = mouseY - y;
+      return floor((1 - dy / h) * 127);
+    }
+    return -1;
   }
 
   NoteChart x(float v) {

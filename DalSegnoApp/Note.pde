@@ -20,5 +20,5 @@ public class Note {
 
   int velocity() {
     return _velocity;
-  }
+}
 }
